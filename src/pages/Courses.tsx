@@ -1,206 +1,192 @@
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { 
-  Plus, 
-  Search, 
-  Filter,
-  BookOpen,
-  Users,
-  Clock,
-  Star,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye
-} from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Search, Plus, BookOpen, Clock, Users, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
+// Mock course data
+const coursesData = [
+  {
+    id: "c1",
+    title: "Fire Safety Training",
+    category: "Emergency Response",
+    description: "Comprehensive fire safety procedures and emergency response",
+    duration: "2 hours",
+    enrolled: 145,
+    rating: 4.8,
+    status: "active",
+    lastUpdated: "2024-12-01"
+  },
+  {
+    id: "c2",
+    title: "Personal Protective Equipment (PPE)",
+    category: "Equipment Safety",
+    description: "Proper use and maintenance of safety equipment",
+    duration: "1.5 hours",
+    enrolled: 203,
+    rating: 4.9,
+    status: "active",
+    lastUpdated: "2024-11-28"
+  },
+  {
+    id: "c3",
+    title: "Chemical Handling & HAZMAT",
+    category: "Chemical Safety",
+    description: "Safe handling of hazardous materials and chemicals",
+    duration: "3 hours",
+    enrolled: 87,
+    rating: 4.7,
+    status: "active",
+    lastUpdated: "2024-11-25"
+  },
+  {
+    id: "c4",
+    title: "First Aid & CPR Certification",
+    category: "Medical Response",
+    description: "Emergency medical response and life-saving techniques",
+    duration: "4 hours",
+    enrolled: 112,
+    rating: 4.9,
+    status: "active",
+    lastUpdated: "2024-11-20"
+  },
+  {
+    id: "c5",
+    title: "Workplace Ergonomics",
+    category: "Health & Wellness",
+    description: "Preventing workplace injuries through proper ergonomics",
+    duration: "1 hour",
+    enrolled: 55,
+    rating: 4.2,
+    status: "draft",
+    lastUpdated: "2024-11-15"
+  },
+  {
+    id: "c6",
+    title: "Electrical Safety",
+    category: "Equipment Safety",
+    description: "Safe practices when working with electrical systems",
+    duration: "2.5 hours",
+    enrolled: 76,
+    rating: 4.6,
+    status: "active",
+    lastUpdated: "2024-11-10"
+  }
+];
+
+// Categories for filter buttons
+const categories = [
+  { key: "all", label: "All" },
+  { key: "emergency-response", label: "Emergency Response" },
+  { key: "equipment-safety", label: "Equipment Safety" },
+  { key: "chemical-safety", label: "Chemical Safety" },
+  { key: "medical-response", label: "Medical Response" },
+  { key: "health-wellness", label: "Health & Wellness" }
+];
 
 const Courses = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("all");
 
-  const courses = [
-    {
-      id: 1,
-      title: 'Fire Safety Training',
-      description: 'Comprehensive fire safety procedures and emergency response',
-      category: 'Emergency Response',
-      duration: '2 hours',
-      enrolledUsers: 145,
-      rating: 4.8,
-      status: 'active',
-      lastUpdated: '2024-12-01'
-    },
-    {
-      id: 2,
-      title: 'Personal Protective Equipment (PPE)',
-      description: 'Proper use and maintenance of safety equipment',
-      category: 'Equipment Safety',
-      duration: '1.5 hours',
-      enrolledUsers: 203,
-      rating: 4.9,
-      status: 'active',
-      lastUpdated: '2024-11-28'
-    },
-    {
-      id: 3,
-      title: 'Chemical Handling & HAZMAT',
-      description: 'Safe handling of hazardous materials and chemicals',
-      category: 'Chemical Safety',
-      duration: '3 hours',
-      enrolledUsers: 87,
-      rating: 4.7,
-      status: 'active',
-      lastUpdated: '2024-11-25'
-    },
-    {
-      id: 4,
-      title: 'First Aid & CPR Certification',
-      description: 'Emergency medical response and life-saving techniques',
-      category: 'Medical Response',
-      duration: '4 hours',
-      enrolledUsers: 156,
-      rating: 4.9,
-      status: 'active',
-      lastUpdated: '2024-11-20'
-    },
-    {
-      id: 5,
-      title: 'Workplace Ergonomics',
-      description: 'Preventing workplace injuries through proper ergonomics',
-      category: 'Health & Wellness',
-      duration: '1 hour',
-      enrolledUsers: 98,
-      rating: 4.6,
-      status: 'draft',
-      lastUpdated: '2024-11-15'
-    },
-    {
-      id: 6,
-      title: 'Electrical Safety',
-      description: 'Safe practices when working with electrical systems',
-      category: 'Equipment Safety',
-      duration: '2.5 hours',
-      enrolledUsers: 67,
-      rating: 4.8,
-      status: 'active',
-      lastUpdated: '2024-11-10'
-    }
-  ];
-
-  const categories = ['All', 'Emergency Response', 'Equipment Safety', 'Chemical Safety', 'Medical Response', 'Health & Wellness'];
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || course.category === selectedCategory;
+  const filteredCourses = coursesData.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          course.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          course.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = activeCategory === "all" || 
+                            course.category.toLowerCase().replace(/\s+/g, '-').includes(activeCategory);
+    
     return matchesSearch && matchesCategory;
   });
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-3xl font-bold text-gray-900">Training Courses</h1>
-        <Button className="bg-orange-600 hover:bg-orange-700">
-          <Plus size={20} className="mr-2" />
+        <Button 
+          onClick={() => navigate('/courses/create')}
+          className="bg-orange-500 hover:bg-orange-600"
+        >
+          <Plus className="w-4 h-4 mr-2" />
           Create Course
         </Button>
       </div>
 
-      {/* Filters */}
+      {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Search courses..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10"
           />
         </div>
-        <div className="flex gap-2 overflow-x-auto">
-          {categories.map((category) => (
+        <div className="flex flex-wrap gap-2">
+          {categories.map(category => (
             <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(category)}
-              className={selectedCategory === category ? "bg-orange-600 hover:bg-orange-700" : ""}
+              key={category.key}
+              variant={activeCategory === category.key ? "default" : "outline"}
+              className={activeCategory === category.key ? "bg-orange-500 hover:bg-orange-600" : ""}
+              onClick={() => setActiveCategory(category.key)}
             >
-              {category}
+              {category.label}
             </Button>
           ))}
         </div>
       </div>
 
-      {/* Course Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Courses List */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {filteredCourses.map((course) => (
-          <Card key={course.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-lg mb-2">{course.title}</CardTitle>
-                  <Badge variant={course.status === 'active' ? 'default' : 'secondary'} className="mb-2">
-                    {course.status}
-                  </Badge>
-                </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal size={16} />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem>
-                      <Eye size={16} className="mr-2" />
-                      View Details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Edit size={16} className="mr-2" />
-                      Edit Course
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-red-600">
-                      <Trash2 size={16} className="mr-2" />
-                      Delete Course
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+          <Card key={course.id} className="overflow-hidden">
+            <div className="h-2 bg-orange-500"></div>
+            <CardContent className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <Badge className={
+                  course.status === "active" 
+                    ? "bg-green-500" 
+                    : "bg-gray-400"
+                }>
+                  {course.status === "active" ? "active" : "draft"}
+                </Badge>
+                <Button variant="ghost" size="icon" className="text-gray-500">
+                  <svg width="15" height="3" viewBox="0 0 15 3" fill="none">
+                    <path d="M1.5 1.5H13.5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                </Button>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-gray-600 text-sm">{course.description}</p>
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <BookOpen size={16} />
-                  <span>{course.category}</span>
+
+              <h3 className="text-lg font-semibold mb-2 line-clamp-2">{course.title}</h3>
+              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{course.description}</p>
+
+              <div className="flex gap-2 items-center mb-2">
+                <BookOpen className="w-4 h-4 text-orange-500" />
+                <span className="text-sm text-gray-700">{course.category}</span>
+              </div>
+
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">{course.duration}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Clock size={16} />
-                  <span>{course.duration}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Users size={16} />
-                  <span>{course.enrolledUsers} enrolled</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Star size={16} className="text-yellow-500" />
-                  <span>{course.rating}/5.0</span>
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-gray-500" />
+                  <span className="text-sm text-gray-600">{course.enrolled} enrolled</span>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-gray-100">
-                <p className="text-xs text-gray-500">Last updated: {course.lastUpdated}</p>
+              <div className="flex justify-between items-center mt-4">
+                <div className="flex items-center">
+                  <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                  <span className="text-sm font-medium">{course.rating}/5.0</span>
+                </div>
+                <span className="text-xs text-gray-500">Last updated: {new Date(course.lastUpdated).toLocaleDateString()}</span>
               </div>
             </CardContent>
           </Card>
@@ -208,10 +194,16 @@ const Courses = () => {
       </div>
 
       {filteredCourses.length === 0 && (
-        <div className="text-center py-12">
-          <BookOpen size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No courses found</h3>
-          <p className="text-gray-600">Try adjusting your search or filter criteria</p>
+        <div className="text-center p-8 bg-gray-50 rounded-lg border border-dashed">
+          <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900">No courses found</h3>
+          <p className="text-gray-600 mb-4">Try adjusting your search or filter criteria</p>
+          <Button onClick={() => {
+            setSearchQuery("");
+            setActiveCategory("all");
+          }}>
+            Clear Filters
+          </Button>
         </div>
       )}
     </div>

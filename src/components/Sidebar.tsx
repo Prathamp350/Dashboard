@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import Logo from './Logo';
 
 const menuItems = [
-  { icon: Home, label: 'Dashboard', path: '/' },
+  { icon: Home, label: 'Dashboard', path: '/dashboard' },
   { icon: BookOpen, label: 'Courses', path: '/courses' },
   { icon: Users, label: 'Users', path: '/users' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics' },

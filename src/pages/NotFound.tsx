@@ -26,7 +26,7 @@ const NotFound = () => {
           The requested URL {location.pathname} does not exist on this server.
         </p>
         <Button asChild className="bg-orange-600 hover:bg-orange-700">
-          <a href="/">Return to Dashboard</a>
+          <a href="/dashboard">Return to Dashboard</a>
         </Button>
       </div>
     </div>

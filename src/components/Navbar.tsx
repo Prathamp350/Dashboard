@@ -1,4 +1,3 @@
-
 import { Search, Bell, User, ChevronDown, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -8,12 +7,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   const handleToggleSidebar = () => {
     if ((window as any).toggleSidebar) {
       (window as any).toggleSidebar();
     }
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem("isLoggedIn");
+    navigate("/login");
+  };
+
+  const handleProfileSettings = () => {
+    navigate("/settings?tab=profile");
   };
 
   return (
@@ -67,10 +78,16 @@ const Navbar = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>Profile Settings</DropdownMenuItem>
-              <DropdownMenuItem>Account Preferences</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleProfileSettings}>
+                Profile Settings
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">Sign Out</DropdownMenuItem>
+              <DropdownMenuItem
+                className="text-red-600"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
